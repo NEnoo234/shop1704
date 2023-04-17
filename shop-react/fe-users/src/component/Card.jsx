@@ -1,7 +1,7 @@
 import React from "react";
 
 const Card = (props) => {
-  const { data, image, name, price, sale, ...others } = props;
+  const { image, name, price, sale } = props;
   const CheckSale = ` ${
     sale !== ""
       ? "position-absolute bg-primary text-white d-flex align-items-center justify-content-center"
