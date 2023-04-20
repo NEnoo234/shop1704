@@ -5,6 +5,8 @@ const url = {
   baseUrl: "http://localhost:8080/laravelapi/public/api",
   login: "/member/login",
   menu: "/Menu",
+  product: "/Product",
+  ProductCategory: "/ProductCategory",
 };
 
 const instance = axios.create({

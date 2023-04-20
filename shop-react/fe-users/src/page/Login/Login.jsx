@@ -28,9 +28,11 @@ const Login = () => {
             userInfo: res.data,
           })
         );
+        console.log(username, password);
         // save user info
         navigate("/Main");
       } else {
+        console.log("sai");
         setMessage(res.message);
       }
     });

@@ -1,47 +1,37 @@
 import React from "react";
-import { useEffect } from "react";
 import { useState } from "react";
-import productService from "./../../api/ProductService";
-import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import ProductCategoryService from "./../../api/ProductCategoryService";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 import { Modal } from "react-bootstrap";
-import { Button } from "react-bootstrap";
-import Input from "./../../Component/Input";
 import { Form } from "react-bootstrap";
+import Input from "./../../Component/Input";
+import { Button } from "react-bootstrap";
 
-const Product = () => {
+const ProductCategory = () => {
   const [modalShow, setModalShow] = useState(false);
   const handleShow = () => setModalShow(true);
   const handleClose = () => setModalShow(false);
-  const [product, setProduct] = useState([]);
+  const [productCategory, setProductCategory] = useState([]);
   const formik = useFormik({
     initialValues: {
       id: 0,
-      ProductID: 0,
       Name: "",
-      ProductCode: "",
+      Status: 1,
       Description: "",
-      ProductType: "",
-      Color: "",
-      Manufacture: "",
-      Madeln: "",
-      CreatedDate: "2023-01-01 00:00:00",
-      Status: 0,
-      ImageUrl: "",
-      Price: "0.0",
-      PriceSale: "0.0",
+      ParentID: "",
     },
     validationSchema: Yup.object({}),
     onSubmit: (values) => {
       handleSave(values);
     },
   });
-
   const showEditModal = (e, id) => {
     if (e) e.preventDefault();
     if (id > 0) {
-      productService.get(id).then((res) => {
+      ProductCategoryService.get(id).then((res) => {
         formik.setValues(res.data);
         handleShow();
       });
@@ -50,9 +40,10 @@ const Product = () => {
       handleShow();
     }
   };
+
   const handleSave = (data) => {
     if (data.id === 0) {
-      productService.add(data).then((res) => {
+      ProductCategoryService.add(data).then((res) => {
         if (res.errorCode === 0) {
           loadData();
           handleClose();
@@ -62,7 +53,7 @@ const Product = () => {
         }
       });
     } else {
-      productService.update(data.id, data).then((res) => {
+      ProductCategoryService.update(data.id, data).then((res) => {
         if (res.errorCode === 0) {
           loadData();
           handleClose();
@@ -73,9 +64,10 @@ const Product = () => {
       });
     }
   };
+
   const handleDelete = (e, id) => {
     e.preventDefault();
-    productService.delete(id).then((res) => {
+    ProductCategoryService.delete(id).then((res) => {
       if (res.errorCode === 0) {
         loadData();
         toast.warn("A data has been deleted");
@@ -87,10 +79,10 @@ const Product = () => {
   useEffect(() => {
     loadData();
   }, []);
-  const loadData = () => {
-    productService.list().then((res) => setProduct(res.data));
-  };
 
+  const loadData = () => {
+    ProductCategoryService.list().then((res) => setProductCategory(res.data));
+  };
   return (
     <>
       <div className="table-data">
@@ -107,34 +99,21 @@ const Product = () => {
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Name</th>
-                <th>Product Code</th>
-                <th>Color</th>
+                <th>Name </th>
                 <th>Status</th>
-                <th>Price</th>
-                <th>Price Sale</th>
-                <th>Manu facture</th>
+                <th>Parent ID</th>
                 <th>Description</th>
-                <th>Product Type</th>
                 <th>Contact</th>
               </tr>
             </thead>
             <tbody>
-              {product.map((item, stt) => (
+              {productCategory.map((item, stt) => (
                 <tr key={item.id}>
                   <td>{stt + 1}</td>
-                  <td>
-                    <img src={item.ImageUrl} alt="" />
-                    <p>{item.Name}</p>
-                  </td>
-                  <td>{item.ProductCode}</td>
-                  <td>{item.Color}</td>
+                  <td>{item.Name}</td>
                   <td>{item.Status}</td>
-                  <td>{item.Price}</td>
-                  <td>{item.PriceSale}</td>
-                  <td>{item.Manufacture}</td>
+                  <td>{item.ParentID}</td>
                   <td>{item.Description}</td>
-                  <td>{item.ProductType}</td>
 
                   <td>
                     <a href="/#" onClick={(e) => showEditModal(e, item.id)}>
@@ -151,7 +130,6 @@ const Product = () => {
         </div>
       </div>
       {/* modal  */}
-
       <Modal
         show={modalShow}
         onHide={handleClose}
@@ -168,23 +146,11 @@ const Product = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            {/* <div className="row">
-              <div className="col-md-6 mb-4">
-                <ImageUpload
-                  id="Imageurl"
-                  frmField={formik.getFieldProps("ImageUrl")}
-                  errorMessage={
-                    formik.touched.ImageUrl && formik.errors.ImageUrl
-                  }
-                />
-              </div>
-            </div> */}
-
             <div className="row">
               <div className="col-md-6 mb-4">
                 <div className="form-outline">
                   <Input
-                    label=" Name :"
+                    label="Name :"
                     type="text"
                     id="txtName"
                     frmField={formik.getFieldProps("Name")}
@@ -196,12 +162,12 @@ const Product = () => {
               <div className="col-md-6 mb-4">
                 <div className="form-outline">
                   <Input
-                    label="Product Code : "
+                    label="Parent ID : "
                     type="text"
-                    id="ProductCode"
-                    frmField={formik.getFieldProps("ProductCode")}
+                    id="ParentID"
+                    frmField={formik.getFieldProps("ParentID")}
                     errorMessage={
-                      formik.touched.ProductCode && formik.errors.ProductCode
+                      formik.touched.ParentID && formik.errors.ParentID
                     }
                     className="form-control"
                   />
@@ -210,36 +176,10 @@ const Product = () => {
             </div>
 
             <div className="row">
-              <div className="col-md-6 mb-4">
+              <div className="col-md-8 mb-4">
                 <div className="form-outline">
                   <Input
-                    label="Status"
-                    type="text"
-                    id="Status"
-                    frmField={formik.getFieldProps("Status")}
-                    errorMessage={formik.touched.Status && formik.errors.Status}
-                    className="form-control"
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-6 mb-2">
-                {" "}
-                <Input
-                  label="Manu facture"
-                  type="text"
-                  id="Manufacture"
-                  frmField={formik.getFieldProps("Manufacture")}
-                  errorMessage={
-                    formik.touched.Manufacture && formik.errors.Manufacture
-                  }
-                  className="form-control"
-                />
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-4">
-                  <Input
-                    label="Description: "
+                    label="Description"
                     type="text"
                     id="Description"
                     frmField={formik.getFieldProps("Description")}
@@ -249,21 +189,10 @@ const Product = () => {
                     className="form-control"
                   />
                 </div>
-                {/* <div className="col-md-6 mb-4">
-                  <Selecter
-                    id="txtProductType"
-                    label="Product Type"
-                    type="text"
-                    frmField={formik.getFieldProps("ProductType")}
-                    errorMessage={
-                      formik.touched.ProductType && formik.errors.ProductType
-                    }
-                    data={productCategory}
-                  ></Selecter>
-                </div> */}
               </div>
+
               <div className="row">
-                <div className="col-md-4 mb-4">
+                <div className="col-md-6 mb-4">
                   <div className="form-inline">
                     <div className="form-check form-check-inline">
                       <Input
@@ -294,31 +223,6 @@ const Product = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-3 mb-2">
-                  {" "}
-                  <Input
-                    label="Price: "
-                    type="text"
-                    id="Price"
-                    frmField={formik.getFieldProps("Price")}
-                    errorMessage={formik.touched.Price && formik.errors.Price}
-                    className="form-control"
-                  />
-                </div>
-                <div className="col-md-3 mb-2" style={{ marginRight: "30px" }}>
-                  {" "}
-                  <Input
-                    style={{ marginLeft: "30px" }}
-                    label="PriceSale: "
-                    type="text"
-                    id="PriceSale"
-                    frmField={formik.getFieldProps("PriceSale")}
-                    errorMessage={
-                      formik.touched.PriceSale && formik.errors.PriceSale
-                    }
-                    className="form-control"
-                  />
-                </div>
               </div>
             </div>
           </Form>
@@ -340,4 +244,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default ProductCategory;

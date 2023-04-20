@@ -1,10 +1,13 @@
 import axios from "axios";
 import store from "./../Store/index";
+import { hideLoading, showLoading } from "react-redux-loading-bar";
 
 const url = {
   baseUrl: "http://localhost:8080/laravelapi/public/api",
   menu: "/Menu",
   product: "/Product",
+  ProductCategory: "/ProductCategory",
+  employees: "/Employees",
 };
 
 const instance = axios.create({
@@ -20,13 +23,16 @@ instance.interceptors.request.use((request) => {
   if (state.auth.token) {
     request.headers.Authorization = `Bearer ${state.auth.token}`;
   }
+  store.dispatch(showLoading());
   return request;
 });
 instance.interceptors.response.use(
   (response) => {
+    setTimeout(() => store.dispatch(hideLoading()), 100);
     return response.data;
   },
   (err) => {
+    setTimeout(() => store.dispatch(hideLoading()), 100);
     if (err.code === "ERR_NETWORK") {
       window.location.href = "/network-error";
     } else {
@@ -53,6 +59,8 @@ const api = {
   put: instance.put,
   delete: instance.delete,
   patch: instance.patch,
+  Promise: axios.all,
+  spread: axios.spread,
 };
 
 export default api;

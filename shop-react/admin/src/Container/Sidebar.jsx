@@ -35,10 +35,10 @@ const Sidebar = () => {
             </Link>
           </li>
           <li>
-            <a href="/#">
+            <Link to="../ProductCategory">
               <i className="bx bxs-message-dots" />
               <span className="text">Loại Mặt Hàng</span>
-            </a>
+            </Link>
           </li>
           <li>
             <a href="/#">
@@ -50,6 +50,12 @@ const Sidebar = () => {
             <a href="../Menu">
               <i className="bx bxs-group" />
               <span className="text">Menu </span>
+            </a>
+          </li>
+          <li>
+            <a href="../Employees">
+              <i className="bx bxs-group" />
+              <span className="text">Employees </span>
             </a>
           </li>
         </ul>
